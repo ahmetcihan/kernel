@@ -24,7 +24,7 @@ static struct property device_disabled = {
 static int ar8031_phy_fixup(struct phy_device *dev)
 {
 	u16 val;
-
+	printk("Ahmet ar8031_phy_fixup");
 	/* Set RGMII IO voltage to 1.8V */
 	phy_write(dev, 0x1d, 0x1f);
 	phy_write(dev, 0x1e, 0x8);
@@ -43,6 +43,7 @@ static int ar8031_phy_fixup(struct phy_device *dev)
 static int bcm54220_phy_fixup(struct phy_device *dev)
 {
 	/* enable RXC skew select RGMII copper mode */
+		printk("Ahmetbcm54220_phy_fixup");
 	phy_write(dev, 0x1e, 0x21);
 	phy_write(dev, 0x1f, 0x7ea8);
 	phy_write(dev, 0x1e, 0x2f);
@@ -50,23 +51,40 @@ static int bcm54220_phy_fixup(struct phy_device *dev)
 
 	return 0;
 }
+static int dp83825_phy_fixup(struct phy_device *dev)
+{
 
-#define PHY_ID_AR8031	0x004dd074
+		printk("Ahmetdp83825_phy_fixup");
+	phy_write(dev, 0x1f, 0x4000);
+
+	return 0;
+}
+
+#define PHY_ID_AR8031		0x004dd074
 #define PHY_ID_BCM54220	0x600d8589
+#define PHY_ID_DP83825I 	0x2000a150
+
 
 static void __init imx7d_enet_phy_init(void)
 {
+	printk("Ahmetimx7d_enet_phy_init");
+
+	//phy_write(0x2000a150, 0x1f, 0x4000);
 	if (IS_BUILTIN(CONFIG_PHYLIB)) {
-		phy_register_fixup_for_uid(PHY_ID_AR8031, 0xffffffff,
-					   ar8031_phy_fixup);
-		phy_register_fixup_for_uid(PHY_ID_BCM54220, 0xffffffff,
-					   bcm54220_phy_fixup);
+	printk("Ahmet bu alt taraf");
+		//phy_register_fixup_for_uid(PHY_ID_DP83825I, 0xffffffff,
+		//			   dp83825_phy_fixup);
+		//phy_register_fixup_for_uid(PHY_ID_AR8031, 0xffffffff,
+		//			   ar8031_phy_fixup);
+		//phy_register_fixup_for_uid(PHY_ID_BCM54220, 0xffffffff,
+		//			   bcm54220_phy_fixup);
 	}
 }
 
 static void __init imx7d_enet_mdio_fixup(void)
 {
 	struct regmap *gpr;
+	printk("Ahmetimx7d_enet_mdio_fixup");
 
 	/* The management data input/output (MDIO) bus where often high-speed,
 	 * open-drain operation is required. i.MX7D TO1.0 ENET MDIO pin has no
@@ -84,6 +102,7 @@ static void __init imx7d_enet_mdio_fixup(void)
 static void __init imx7d_enet_clk_sel(void)
 {
 	struct regmap *gpr;
+	printk("Ahmetimx7d_enet_clk_sel");
 
 	gpr = syscon_regmap_lookup_by_compatible("fsl,imx7d-iomuxc-gpr");
 	if (!IS_ERR(gpr)) {
@@ -96,6 +115,7 @@ static void __init imx7d_enet_clk_sel(void)
 
 static inline void imx7d_enet_init(void)
 {
+	printk("Ahmetimx7d_enet_init");
 	imx6_enet_mac_init("fsl,imx7d-fec", "fsl,imx7d-ocotp");
 	imx7d_enet_mdio_fixup();
 	imx7d_enet_phy_init();
@@ -105,6 +125,7 @@ static inline void imx7d_enet_init(void)
 static inline void imx7d_disable_arm_arch_timer(void)
 {
 	struct device_node *node;
+	printk("Ahmetimx7d_disable_arm_arch_timer");
 
 	node = of_find_compatible_node(NULL, NULL, "arm,armv7-timer");
 	if (node) {
@@ -116,6 +137,7 @@ static inline void imx7d_disable_arm_arch_timer(void)
 static void __init imx7d_init_machine(void)
 {
 	struct device *parent;
+	printk("Ahmetimx7d_init_machine");
 
 	parent = imx_soc_device_init();
 	if (parent == NULL)
@@ -130,6 +152,7 @@ static void __init imx7d_init_machine(void)
 
 static void __init imx7d_init_late(void)
 {
+	printk("Ahmetimx7d_init_late");
 	imx7d_cpuidle_init();
 	if (IS_ENABLED(CONFIG_ARM_IMX_CPUFREQ_DT))
 		platform_device_register_simple("imx-cpufreq-dt", -1, NULL, 0);
@@ -137,6 +160,7 @@ static void __init imx7d_init_late(void)
 
 static void __init imx7d_init_irq(void)
 {
+	printk("Ahmetimx7d_init_irq");
 	imx_gpcv2_check_dt();
 	imx_init_revision_from_anatop();
 	imx_src_init();
@@ -148,6 +172,7 @@ static void __init imx7d_init_irq(void)
 
 static void __init imx7d_map_io(void)
 {
+	printk("Ahmetimx7d_map_io");
 	debug_ll_io_init();
 	imx7_pm_map_io();
 	imx_busfreq_map_io();
